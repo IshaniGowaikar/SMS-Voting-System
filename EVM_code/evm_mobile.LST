@@ -1,0 +1,1013 @@
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.10
+OBJECT MODULE PLACED IN evm_mobile.OBJ
+ASSEMBLER INVOKED BY: C:\Keil51\C51\BIN\A51.EXE evm_mobile.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1            
+                       2     
+                       3     
+  0000                 4              da_ta   bit     0
+  0001                 5              gsm     bit     1
+  0002                 6              us1     bit     2
+  0003                 7              us2     bit     3
+  0004                 8              us3     bit     4
+  0005                 9              us4     bit     5
+  0006                10              us5     bit     6
+  0007                11              vvt     bit     7
+                      12     
+                      13     
+  0030                14              dl0     equ     30H
+  0031                15              dl1     equ     31H
+  0032                16              dl2     equ     32H
+  0033                17              scnt    equ     33h
+  0037                18              ccnt1   equ     37h
+  0038                19              ccnt2   equ     38h
+  0039                20              ccnt3   equ     39h
+  003A                21              ccnt4   equ     3ah
+                      22     
+                      23     
+0000                  24              org      0000h
+0000 1203F3           25              lcall    delay1
+0003 C2A4             26              clr      p2.4
+0005 759850           27              mov      scon,#50h
+0008 758920           28              mov      tmod,#20h
+000B 758BFD           29              mov      tl1,#0fdh
+000E 758DFD           30              mov      th1,#0fdh
+0011 D28E             31              setb     tr1
+0013 75A880           32              mov      ie,#80h
+0016 D28E             33              setb     tr1
+0018 12031A           34              lcall    lcdinit
+001B 752000           35              mov      20h,#0
+001E 120400           36              lcall    delay
+                      37     ;        jb       p3.7,chk_cmd
+                      38     ;        lcall    delay1
+                      39      ;       jb       p3.7,chk_cmd
+0021 753700           40              mov      ccnt1,#0
+0024 753800           41              mov      ccnt2,#0
+0027 753900           42              mov      ccnt3,#0
+002A 753A00           43              mov      ccnt4,#0
+002D 01D4             44              ajmp     chk_voting
+                      45     
+002F                  46     counting:
+002F 120400           47             lcall   delay
+0032 120400           48             lcall   delay
+                      49     ;       lcall   read_vote
+0035 120329           50             lcall   clear
+0038 7442             51             mov     a,#'B'
+003A 12033F           52             lcall   display
+003D 744A             53             mov     a,#'J'
+003F 12033F           54             lcall   display
+0042 7450             55             mov     a,#'P'
+0044 12033F           56             lcall   display
+0047 743A             57             mov     a,#':'
+0049 12033F           58             lcall   display
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     2
+
+004C E537             59             mov     a,ccnt1
+004E 75F00A           60             mov     b,#10
+0051 84               61             div     ab
+0052 12033D           62             lcall   display1
+0055 E5F0             63             mov     a,b
+0057 12033D           64             lcall   display1
+                      65     
+005A 7488             66             mov     a,#88h
+005C 12032F           67             lcall   command 
+005F 7443             68             mov     a,#'C'
+0061 12033F           69             lcall   display
+0064 744E             70             mov     a,#'N'
+0066 12033F           71             lcall   display
+0069 7447             72             mov     a,#'G'
+006B 12033F           73             lcall   display
+006E 743A             74             mov     a,#':'
+0070 12033F           75             lcall   display
+0073 E538             76             mov     a,ccnt2
+0075 75F00A           77             mov     b,#10
+0078 84               78             div     ab
+0079 12033D           79             lcall   display1
+007C E5F0             80             mov     a,b
+007E 12033D           81             lcall   display1
+                      82     
+                      83     
+0081 74C0             84             mov     a,#0c0h
+0083 12032F           85             lcall   command 
+0086 744E             86             mov     a,#'N'
+0088 12033F           87             lcall   display
+008B 7443             88             mov     a,#'C'
+008D 12033F           89             lcall   display
+0090 7450             90             mov     a,#'P'
+0092 12033F           91             lcall   display
+0095 743A             92             mov     a,#':'
+0097 12033F           93             lcall   display
+009A E539             94             mov     a,ccnt3
+009C 75F00A           95             mov     b,#10
+009F 84               96             div     ab
+00A0 12033D           97             lcall   display1
+00A3 E5F0             98             mov     a,b
+00A5 12033D           99             lcall   display1
+                     100     
+00A8 74C8            101             mov     a,#0c8h
+00AA 12032F          102             lcall   command 
+00AD 744D            103             mov     a,#'M'
+00AF 12033F          104             lcall   display
+00B2 744E            105             mov     a,#'N'
+00B4 12033F          106             lcall   display
+00B7 7453            107             mov     a,#'S'
+00B9 12033F          108             lcall   display
+00BC 743A            109             mov     a,#':'
+00BE 12033F          110             lcall   display
+00C1 E53A            111             mov     a,ccnt4
+00C3 75F00A          112             mov     b,#10
+00C6 84              113             div     ab
+00C7 12033D          114             lcall   display1
+00CA E5F0            115             mov     a,b
+00CC 12033D          116             lcall   display1
+00CF 120400          117             lcall   delay
+00D2 80FE            118             sjmp    $
+                     119     
+                     120     ;------------------------------------------------------------------------------------------
+                             ------
+                     121     
+00D4                 122     chk_voting:
+                     123     ;        mov      dptr,#vmd
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     3
+
+                     124     ;         mov      R7,#11
+                     125     ;         lcall    disp_msg
+                     126     ;         lcall    delay
+00D4 120400          127              lcall    delay
+00D7 120413          128              lcall   chk_gsm
+00DA 30011D          129              jnb     gsm,agn1
+00DD 120400          130              lcall   delay
+00E0 120597          131              lcall   send_init
+00E3 120400          132              lcall   delay
+00E6 120561          133              lcall   delet_all
+00E9 120400          134              lcall   delay
+00EC 120400          135              lcall   delay
+00EF 1205D3          136              lcall   rd_cntr
+00F2 854633          137              mov     scnt,46h
+00F5 120400          138              lcall   delay
+00F8 7C32            139              mov     r4,#50
+                     140     
+00FA 120329          141     agn1:   lcall   clear
+00FD 900360          142             mov      dptr,#msg1
+0100 7F10            143             mov      R7,#16
+0102 120310          144             lcall    disp_msg
+0105 120400          145             lcall    delay
+0108 120400          146             lcall    delay
+                     147     
+010B 120400          148             lcall   delay
+010E 300102          149             jnb     gsm,nogs 
+0111 8017            150             sjmp    read_msgcntr
+                     151     
+0113 74C0            152     nogs:    mov     a,#0c0h
+0115 712F            153              acall   command
+0117 9006C3          154              mov     dptr,#ngsm
+011A 7F10            155              mov     R7,#16
+011C 120310          156              lcall   disp_msg
+011F 120400          157              lcall   delay
+0122 120400          158              lcall   delay
+0125 120400          159              lcall   delay
+0128 80FE            160              sjmp    $
+                     161     
+012A                 162     read_msgcntr:
+012A 20A008          163            jb       p2.0,chk_msg
+012D 1203F3          164            lcall    delay1
+0130 20A002          165            jb       p2.0,chk_msg
+0133 012F            166            ajmp     counting
+0135                 167     chk_msg:
+0135 120400          168            lcall    delay
+0138 120400          169            lcall    delay
+013B 120400          170            lcall    delay
+013E 120400          171            lcall    delay
+0141 1205D3          172            lcall    rd_cntr
+0144 120600          173            lcall    disp_cntr
+0147 E533            174            mov      a,scnt
+0149 B54602          175            cjne     a,46h,newmsg
+014C 80DC            176            sjmp     read_msgcntr
+                     177                                     
+014E 854633          178     newmsg:mov     scnt,46h
+0151 120614          179            lcall   read_sms
+0154 12065F          180            lcall   disp_sms
+0157 120400          181            lcall   delay
+015A 120400          182            lcall   delay
+015D 120400          183            lcall   delay
+0160 120400          184            lcall   delay
+0163 8022            185            sjmp    chkk_msg
+                     186     
+0165 120329          187     inv_m:   lcall  clear 
+0168 9006F5          188              MOV    DPTR,#invm
+016B 7F10            189              MOV    R7,#16
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     4
+
+016D 120310          190              lcall   disp_msg
+0170 120400          191              lcall  DELAY
+0173 120597          192              lcall   send_init
+0176 120400          193              lcall   delay
+0179 120561          194              lcall  delet_all
+017C 120400          195              lcall  delay
+017F 1205D3          196              lcall  rd_cntr
+0182 854633          197               mov   scnt,46h
+0185 212A            198              ajmp   read_msgcntr
+                     199     
+0187 E550            200     chkk_msg:mov    a,50h
+0189 B42332          201              cjne   a,#'#',chk_vt
+018C E551            202              mov    a,51h
+018E B431D4          203              cjne   a,#'1',inv_m
+0191 E552            204              mov    a,52h
+0193 B431CF          205              cjne   a,#'1',inv_m
+0196 120329          206              lcall  clear 
+0199 9003D3          207              MOV    DPTR,#cndrq
+019C 7F10            208              MOV    R7,#16
+019E 120310          209              lcall   disp_msg
+01A1 120400          210              lcall  DELAY
+01A4 12047B          211              lcall  send_cand
+01A7 120400          212              lcall  delay
+01AA 120597          213              lcall   send_init
+01AD 120400          214              lcall   delay
+01B0 120561          215              lcall  delet_all
+01B3 120400          216              lcall  delay
+01B6 1205D3          217              lcall  rd_cntr
+01B9 854633          218              mov    scnt,46h
+01BC 212A            219              ajmp   read_msgcntr
+                     220     
+                     221      
+01BE B42AA4          222     chk_vt:  cjne   a,#'*',inv_m
+01C1 120329          223              lcall  clear 
+01C4 900393          224              MOV    DPTR,#psrc
+01C7 7F10            225              MOV    R7,#16
+01C9 120310          226              lcall   disp_msg
+01CC 120400          227              lcall  delay
+01CF E551            228              mov    a,51h
+01D1 B43112          229              cjne   a,#'1',chk_ps2 
+01D4 E552            230              mov    a,52h
+01D6 B4350D          231              cjne   a,#'5',chk_ps2 
+01D9 200278          232              jb     us1,alrd_dn
+01DC 1202BB          233              lcall  chk_vote
+01DF 300770          234              jnb    vvt,out_v1
+01E2 D202            235              setb   us1
+01E4 4193            236              ajmp   vote_dn 
+01E6                 237     chk_ps2:
+01E6 B43212          238              cjne   a,#'2',chk_ps3 
+01E9 E552            239              mov    a,52h
+01EB B4360D          240              cjne   a,#'6',chk_ps3 
+01EE 200363          241              jb     us2,alrd_dn
+01F1 1202BB          242              lcall  chk_vote
+01F4 30075B          243              jnb    vvt,out_v1
+01F7 D203            244              setb   us2
+01F9 4193            245              ajmp   vote_dn 
+01FB                 246     chk_ps3:
+01FB B43312          247              cjne   a,#'3',chk_ps4 
+01FE E552            248              mov    a,52h
+0200 B4370D          249              cjne   a,#'7',chk_ps4 
+0203 20044E          250              jb     us3,alrd_dn
+0206 1202BB          251              lcall  chk_vote
+0209 300746          252              jnb    vvt,out_v1
+020C D204            253              setb   us3
+020E 4193            254              ajmp   vote_dn 
+0210                 255     chk_ps4:
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     5
+
+0210 B43412          256              cjne   a,#'4',inv_vt
+0213 E552            257              mov    a,52h
+0215 B4380D          258              cjne   a,#'8',inv_vt
+0218 200539          259              jb     us4,alrd_dn
+021B 1202BB          260              lcall  chk_vote
+021E 300731          261              jnb    vvt,out_v1
+0221 D205            262              setb   us4
+0223 4193            263              ajmp   vote_dn 
+                     264     
+0225 120329          265     inv_vt:  lcall  clear 
+0228 9003A3          266              MOV    DPTR,#invt
+022B 7F10            267              MOV    R7,#16
+022D 120310          268              lcall   disp_msg
+0230 D2A4            269              setb    p2.4
+0232 120400          270              lcall  DELAY
+0235 120400          271              lcall  DELAY
+0238 C2A4            272              clr    p2.4 
+023A 12049F          273              lcall  send_invt
+023D 120400          274              lcall  delay
+0240 120597          275              lcall   send_init
+0243 120400          276              lcall   delay
+0246 120561          277              lcall  delet_all
+0249 120400          278              lcall  delay
+024C 1205D3          279              lcall  rd_cntr
+024F 854633          280              mov    scnt,46h
+0252 212A            281     out_v1:  ajmp   read_msgcntr
+                     282     
+0254 120329          283     alrd_dn: lcall  clear 
+0257 9003B3          284              MOV    DPTR,#alrdn
+025A 7F10            285              MOV    R7,#16
+025C 120310          286              lcall   disp_msg
+025F D2A4            287              setb    p2.4
+0261 120400          288              lcall  DELAY
+0264 120400          289              lcall  DELAY
+0267 C2A4            290              clr    p2.4 
+0269 120400          291              lcall  DELAY
+026C 120400          292              lcall  DELAY
+026F D2A4            293              setb    p2.4
+0271 120400          294              lcall  DELAY
+0274 120400          295              lcall  DELAY
+0277 C2A4            296              clr    p2.4 
+0279 1204C3          297              lcall  send_alrdn
+027C 120400          298              lcall  delay
+027F 120597          299              lcall  send_init
+0282 120400          300              lcall  delay
+0285 120561          301              lcall  delet_all
+0288 120400          302              lcall  delay
+028B 1205D3          303              lcall  rd_cntr
+028E 854633          304              mov    scnt,46h
+0291 212A            305              ajmp   read_msgcntr
+                     306     
+0293 120329          307     vote_dn: lcall  clear 
+0296 9003C3          308              MOV    DPTR,#vtdn
+0299 7F10            309              MOV    R7,#16
+029B 120310          310              lcall   disp_msg
+029E 120400          311              lcall  DELAY
+02A1 1204E7          312              lcall  send_vtdn
+02A4 120400          313              lcall  delay
+02A7 120597          314              lcall  send_init
+02AA 120400          315              lcall  delay
+02AD 120561          316              lcall  delet_all
+02B0 120400          317              lcall  delay
+02B3 1205D3          318              lcall  rd_cntr
+02B6 854633          319              mov    scnt,46h
+02B9 212A            320              ajmp   read_msgcntr
+                     321     
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     6
+
+02BB C207            322     chk_vote:clr    vvt
+02BD E553            323              mov    a,53h
+02BF B43105          324              cjne   a,#'1',chk_cd2
+02C2 0537            325              inc    ccnt1
+                     326     ;        lcall  write_vote
+02C4 D207            327              setb   vvt
+02C6 22              328              ret
+02C7 B43205          329     chk_cd2: cjne   a,#'2',chk_cd3
+02CA 0538            330              inc    ccnt2
+                     331     ;        lcall  write_vote
+02CC D207            332              setb   vvt
+02CE 22              333              ret
+02CF B43305          334     chk_cd3: cjne   a,#'3',chk_cd4
+02D2 0539            335              inc    ccnt3
+                     336     ;        lcall  write_vote
+02D4 D207            337              setb   vvt
+02D6 22              338              ret
+02D7 B43405          339     chk_cd4: cjne   a,#'4',inv_cnd
+02DA 053A            340              inc    ccnt4
+                     341     ;        lcall  write_vote
+02DC D207            342              setb   vvt
+02DE 22              343              ret
+                     344     
+02DF 120329          345     inv_cnd: lcall  clear 
+02E2 9003E3          346              MOV    DPTR,#invcd
+02E5 7F10            347              MOV    R7,#16
+02E7 120310          348              lcall   disp_msg
+02EA D2A4            349              setb    p2.4
+02EC 120400          350              lcall  DELAY
+02EF 120400          351              lcall  DELAY
+02F2 C2A4            352              clr    p2.4 
+02F4 120400          353              lcall  DELAY
+02F7 12050B          354              lcall  send_invcd
+02FA 120400          355              lcall  delay
+02FD 120597          356              lcall  send_init
+0300 120400          357              lcall  delay
+0303 120561          358              lcall  delet_all
+0306 120400          359              lcall  delay
+0309 1205D3          360              lcall  rd_cntr
+030C 854633          361              mov    scnt,46h
+030F 22              362              ret
+                     363     
+                     364     ;--------------------------------------------------
+                     365     
+0310 7400            366     disp_msg:MOV    A,#0
+0312 93              367             MOVC    A,@A+DPTR
+0313 12033F          368             lcall   DISPLAY
+0316 A3              369             INC     DPTR
+0317 DFF7            370             DJNZ    R7,DISP_MSG
+0319 22              371             RET
+                     372     
+031A 7438            373     lcdinit:mov     a,#38h
+031C 12032F          374             lcall   command
+031F 740E            375             mov     a,#0eh
+0321 12032F          376             lcall   command
+0324 7406            377             mov     a,#06h
+0326 12032F          378             lcall   command
+0329 7401            379     CLEAR:  MOV     A,#01H
+032B 12032F          380             lcall   COMMAND
+032E 22              381             RET
+                     382     
+032F 12034D          383     COMMAND:lcall   READY
+0332 F580            384             MOV     P0,A
+0334 C2A5            385             CLR     P2.5
+0336 C2A6            386             CLR     P2.6
+0338 D2A7            387             SETB    P2.7
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     7
+
+033A C2A7            388             CLR     P2.7
+033C 22              389             RET
+                     390     
+033D 2430            391     DISPLAY1:ADD   A,#30H
+033F 12034D          392     DISPLAY:lcall  READY
+0342 F580            393             MOV    P0,A
+0344 D2A5            394             SETB   P2.5
+0346 C2A6            395             CLR    P2.6
+0348 D2A7            396             SETB   P2.7
+034A C2A7            397             CLR    P2.7
+034C 22              398             RET
+                     399     
+034D C2A7            400     READY:  CLR   P2.7
+034F 7580FF          401             MOV   P0,#0FFH
+0352 C2A5            402             CLR   P2.5
+0354 D2A6            403             SETB  P2.6
+0356 C2A7            404     WAIT:   CLR   P2.7
+0358 D2A7            405             SETB  P2.7
+035A 2087F9          406             JB    P0.7,WAIT
+035D C2A7            407             CLR   P2.7
+035F 22              408             RET
+                     409     
+0360 534D5320        410     MSG1:  DB    'SMS Voting Syst. '
+0364 566F7469                
+0368 6E672053                
+036C 7973742E                
+0370 20                      
+                     411     ;MSG2:  DB    '    System      '
+                     412     
+0371 566F7469        413     vmd:   db    'Voting mode      '
+0375 6E67206D                
+0379 6F646520                
+037D 20202020                
+0381 20                      
+0382 436F756E        414     cmd:   db    'Counting mode    '
+0386 74696E67                
+038A 206D6F64                
+038E 65202020                
+0392 20                      
+                     415     
+0393 566F7469        416     psrc:  db    'Voting received '
+0397 6E672072                
+039B 65636569                
+039F 76656420                
+03A3 496E7661        417     invt:  db    'Invalid voter   ' 
+03A7 6C696420                
+03AB 766F7465                
+03AF 72202020                
+03B3 416C7265        418     alrdn: db    'Already done    ' 
+03B7 61647920                
+03BB 646F6E65                
+03BF 20202020                
+03C3 566F7469        419     vtdn:  db    'Voting done     ' 
+03C7 6E672064                
+03CB 6F6E6520                
+03CF 20202020                
+03D3 43616E64        420     cndrq: db    'Candidate req.  '
+03D7 69646174                
+03DB 65207265                
+03DF 712E2020                
+03E3 496E7661        421     invcd: db    'Invalid candt.  '
+03E7 6C696420                
+03EB 63616E64                
+03EF 742E2020                
+                     422     
+03F3 7531FA          423     delay1: mov     dl1,#250
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     8
+
+03F6 7530FA          424     l21:    mov     dl0,#250
+03F9 D530FD          425     l11:    djnz    dl0,l11
+03FC D531F7          426             djnz    dl1,l21
+03FF 22              427             ret
+                     428     
+0400 753205          429     DELAY:  MOV     DL2,#5
+0403 7531FF          430     l3:     MOV     DL1,#0ffh
+0406 7530FF          431     l2:     MOV     DL0,#0ffh
+0409 D530FD          432     l1:     DJNZ    DL0,l1
+040C D531F7          433             DJNZ    DL1,l2
+040F D532F1          434             DJNZ    DL2,l3
+0412 22              435             RET
+                     436     
+                     437     ;------------------------------------------------------------------------
+                     438     
+0413 7D64            439     chk_gsm: mov      r5,#100
+0415 7C64            440              mov      r4,#100               ;
+0417 C201            441              CLR      GSM
+0419 900686          442              mov      dptr,#init
+041C 7E02            443              mov      r6,#2
+041E 120673          444              lcall    send_data
+0421 740D            445              mov      a,#0dh
+0423 12067E          446              lcall    trans
+0426 740A            447              mov      a,#0ah
+0428 12067E          448              lcall    trans
+042B C298            449              CLR      RI
+042D 30981B          450     gsm_chk: jnb      ri,d_sec
+0430 C298            451              clr      ri
+0432 E599            452              mov      a,sbuf
+0434 B40A14          453              cjne     a,#0AH,d_sec
+0437 120329          454              lcall   clear
+043A 9006B4          455              mov     dptr,#ygsm
+043D 7F10            456              mov     R7,#16
+043F 120310          457              lcall   DISP_MSG
+0442 120400          458              lcall   delay
+0445 120400          459              lcall   delay
+0448 D201            460              setb     gsm
+044A 22              461              ret
+                     462     
+044B 7F64            463     d_sec:   mov     r7,#100
+044D DFFE            464              djnz    r7,$
+044F DCDC            465              djnz    r4,gsm_chk
+0451 7C64            466              mov     r4,#100
+0453 DDD8            467              djnz    r5,gsm_chk
+0455 C201            468              clr     gsm
+                     469     
+0457 120329          470              lcall   clear
+045A 9006C3          471              mov     dptr,#ngsm
+045D 7F10            472              mov     R7,#16
+045F 120310          473              lcall   DISP_MSG
+0462 120400          474              lcall   delay
+0465 120400          475              lcall   delay
+0468 22              476              ret
+                     477     
+0469 120329          478     new_msg: lcall   clear
+046C 9006DA          479              mov     dptr,#nsms
+046F 7F0B            480              mov     R7,#11
+0471 120310          481              lcall   DISP_MSG
+0474 120400          482              lcall   delay
+0477 120400          483              lcall   delay
+047A 22              484              ret
+                     485     
+047B                 486     send_cand:
+047B 12052F          487             lcall    send_mobno
+047E 900705          488             mov      dptr,#cand
+0481 7E51            489             mov      r6,#81
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE     9
+
+0483 120673          490             lcall    send_data
+0486 120400          491             lcall    delay
+0489 741A            492             mov      a,#1ah          ;ctr. z
+048B 12067E          493             lcall    trans
+048E 740D            494             mov      a,#0dh
+0490 12067E          495             lcall    trans
+0493 740A            496             mov      a,#0ah
+0495 12067E          497             lcall    trans
+0498 120400          498             lcall    delay
+049B 120400          499             lcall    delay
+049E 22              500             ret
+                     501     
+049F                 502     send_invt:
+049F 12052F          503             lcall    send_mobno
+04A2 9003A3          504             mov      dptr,#invt
+04A5 7E10            505             mov      r6,#16
+04A7 120673          506             lcall    send_data
+04AA 120400          507             lcall    delay
+04AD 741A            508             mov      a,#1ah          ;ctr. z
+04AF 12067E          509             lcall    trans
+04B2 740D            510             mov      a,#0dh
+04B4 12067E          511             lcall    trans
+04B7 740A            512             mov      a,#0ah
+04B9 12067E          513             lcall    trans
+04BC 120400          514             lcall    delay
+04BF 120400          515             lcall    delay
+04C2 22              516             ret
+                     517     
+04C3                 518     send_alrdn:
+04C3 12052F          519             lcall    send_mobno
+04C6 9003B3          520             mov      dptr,#alrdn
+04C9 7E10            521             mov      r6,#16
+04CB 120673          522             lcall    send_data
+04CE 120400          523             lcall    delay
+04D1 741A            524             mov      a,#1ah          ;ctr. z
+04D3 12067E          525             lcall    trans
+04D6 740D            526             mov      a,#0dh
+04D8 12067E          527             lcall    trans
+04DB 740A            528             mov      a,#0ah
+04DD 12067E          529             lcall    trans
+04E0 120400          530             lcall    delay
+04E3 120400          531             lcall    delay
+04E6 22              532             ret
+                     533     
+04E7                 534     send_vtdn:
+04E7 12052F          535             lcall    send_mobno
+04EA 9003C3          536             mov      dptr,#vtdn
+04ED 7E10            537             mov      r6,#16
+04EF 120673          538             lcall    send_data
+04F2 120400          539             lcall    delay
+04F5 741A            540             mov      a,#1ah          ;ctr. z
+04F7 12067E          541             lcall    trans
+04FA 740D            542             mov      a,#0dh
+04FC 12067E          543             lcall    trans
+04FF 740A            544             mov      a,#0ah
+0501 12067E          545             lcall    trans
+0504 120400          546             lcall    delay
+0507 120400          547             lcall    delay
+050A 22              548             ret
+                     549     
+050B                 550     send_invcd:
+050B 12052F          551             lcall    send_mobno
+050E 9003E3          552             mov      dptr,#invcd
+0511 7E11            553             mov      r6,#17
+0513 120673          554             lcall    send_data
+0516 120400          555             lcall    delay
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    10
+
+0519 741A            556             mov      a,#1ah          ;ctr. z
+051B 12067E          557             lcall    trans
+051E 740D            558             mov      a,#0dh
+0520 12067E          559             lcall    trans
+0523 740A            560             mov      a,#0ah
+0525 12067E          561             lcall    trans
+0528 120400          562             lcall    delay
+052B 120400          563             lcall    delay
+052E 22              564             ret
+                     565     
+052F                 566     send_mobno:
+052F 900699          567             mov      dptr,#mmno
+0532 7E08            568             mov      r6,#8
+0534 120673          569             lcall    send_data
+0537 7422            570             mov     a,#'"'
+0539 12067E          571             lcall   trans
+053C 7840            572             mov     r0,#40h
+053E 790A            573             mov     r1,#10
+0540 E6              574     ssss3:   mov     a,@r0
+0541 12067E          575             lcall   trans
+0544 08              576             inc     r0
+0545 D9F9            577             djnz    r1,ssss3
+0547 7422            578             mov     a,#'"'
+0549 12067E          579             lcall   trans
+054C 740D            580             mov      a,#0dh
+054E 12067E          581             lcall    trans
+0551 740A            582             mov      a,#0ah
+0553 12067E          583             lcall    trans
+0556 3098FD          584     sss4:   jnb      ri,$
+0559 C298            585             clr      ri
+055B E599            586             mov      a,sbuf
+055D B43EF6          587             cjne     a,#'>',sss4
+0560 22              588             ret
+                     589     
+                     590     
+0561                 591     delet_all:
+0561 9006A9          592             mov      dptr,#sdel
+0564 7E0B            593             mov      r6,#11
+0566 120673          594             lcall    send_data
+0569 740D            595             mov      a,#0dh
+056B 12067E          596             lcall    trans
+056E 740A            597             mov      a,#0ah
+0570 12067E          598             lcall    trans
+0573 C298            599             clr      ri
+0575 3098FD          600     ddd0:   jnb      ri,$
+0578 C298            601             clr      ri
+057A E599            602             mov      a,sbuf
+057C B40AF6          603             cjne     a,#0ah,ddd0
+                     604     
+057F 3098FD          605     ddd1:   jnb      ri,$
+0582 C298            606             clr      ri
+0584 E599            607             mov      a,sbuf
+0586 B40AF6          608             cjne     a,#0ah,ddd1
+                     609     
+0589 3098FD          610     ddd2:   jnb      ri,$
+058C C298            611             clr      ri
+058E E599            612             mov      a,sbuf
+0590 B40AF6          613             cjne     a,#0ah,ddd2
+                     614     
+0593 120400          615             lcall    delay
+0596 22              616             ret
+                     617     
+                     618     ;-------------------------------------------------------------------------
+                     619     
+0597 900686          620     send_init:mov    dptr,#init
+059A 7E02            621            mov      r6,#2
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    11
+
+059C 120673          622            lcall    send_data
+059F 740D            623            mov      a,#0dh
+05A1 12067E          624            lcall    trans
+05A4 740A            625            mov      a,#0ah
+05A6 12067E          626            lcall    trans
+05A9 3098FD          627     agg:   jnb      ri,$
+05AC C298            628            clr      ri
+05AE E599            629            mov      a,sbuf
+05B0 B40AF6          630            cjne     a,#0AH,agg
+05B3 900688          631     sel_mode:mov    dptr,#tmd
+05B6 7E09            632            mov      r6,#9
+05B8 120673          633            lcall    send_data
+05BB 740D            634            mov      a,#0dh
+05BD 12067E          635            lcall    trans
+05C0 740A            636            mov      a,#0ah
+05C2 12067E          637            lcall    trans
+05C5 3098FD          638     agg0:  jnb       ri,$
+05C8 C298            639            clr      ri
+05CA E599            640            mov      a,sbuf
+05CC B40AF6          641            cjne     a,#0ah,agg0
+05CF 120400          642            lcall    delay
+05D2 22              643            ret
+                     644     
+                     645     ;--------------------------------------------------------------------------
+                     646     
+05D3 900691          647     rd_cntr:mov     dptr,#mmem
+05D6 7E08            648            mov      r6,#8
+05D8 120673          649            lcall    send_data
+05DB 740D            650            mov      a,#0dh
+05DD 12067E          651            lcall    trans
+05E0 740A            652            mov      a,#0ah
+05E2 12067E          653            lcall    trans
+05E5 3098FD          654     agg231:jnb      ri,$
+05E8 C298            655            clr      ri
+05EA E599            656            mov      a,sbuf
+05EC B43AF6          657            cjne     a,#':',agg231
+                     658     
+05EF 7840            659            MOV      R0,#40H
+05F1 C298            660            clr      ri
+05F3 3098FD          661     agg11: jnb      ri,$
+05F6 C298            662            clr      ri
+05F8 E599            663            mov      a,sbuf
+05FA F6              664            MOV      @R0,A
+05FB 08              665            inc      r0
+05FC B40AF4          666            cjne     a,#0ah,agg11
+05FF 22              667            ret
+                     668     
+0600 120329          669     disp_cntr:lcall clear
+0603 9006D3          670            mov      dptr,#inb
+0606 7F07            671            mov      r7,#7
+0608 120310          672            lcall    disp_msg
+060B E546            673            mov      a,46h
+060D 12033F          674            lcall    display
+0610 120400          675            lcall    delay
+0613 22              676            ret
+                     677     ;----------------------------------------------------------
+0614 9006A1          678     read_sms:mov    dptr,#sred
+0617 7E08            679            mov      r6,#8
+0619 120673          680            lcall    send_data
+061C E533            681            mov      a,scnt
+061E 12067E          682            lcall    trans
+0621 740D            683            mov      a,#0dh
+0623 12067E          684            lcall    trans
+0626 740A            685            mov      a,#0ah
+0628 12067E          686            lcall    trans
+                     687     
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    12
+
+062B 3098FD          688     agg23: jnb      ri,$
+062E C298            689            clr      ri
+0630 E599            690            mov      a,sbuf
+0632 B40AF6          691            cjne     a,#0AH,agg23
+                     692     
+                     693     ;agg24: jnb      ri,$
+                     694     ;       clr      ri
+                     695     ;       mov      a,sbuf
+                     696     ;       cjne     a,#0AH,agg24
+                     697     
+0635 3098FD          698     agg224:jnb      ri,$
+0638 C298            699            clr      ri
+063A E599            700            mov      a,sbuf
+063C B431F6          701            cjne     a,#'1',agg224
+                     702     
+063F 7840            703            mov      r0,#40h
+0641 3098FD          704     agg25: jnb      ri,$
+0644 C298            705            clr      ri
+0646 E599            706            mov      a,sbuf
+0648 F6              707            mov      @r0,a
+0649 08              708            inc      r0
+064A B40AF4          709            cjne     a,#0AH,agg25
+                     710     
+064D 7850            711            mov      r0,#50h
+064F 3098FD          712     agg26: jnb      ri,$
+0652 C298            713            clr      ri
+0654 E599            714            mov      a,sbuf
+0656 F6              715            mov      @r0,a
+0657 08              716            inc      r0
+0658 B40AF4          717            cjne     a,#0AH,agg26
+065B 120400          718            lcall    delay
+065E 22              719            ret
+                     720     
+065F 120329          721     disp_sms:lcall clear
+0662 7850            722            mov      r0,#50h
+0664 7910            723            mov      r1,#16
+0666 E6              724     dss2:  mov      a,@r0
+0667 B40A02          725            cjne     a,#0ah,diss1
+066A C172            726            ajmp     outrd
+066C 12033F          727     diss1: lcall    display
+066F 08              728            inc      r0
+0670 D9F4            729            djnz     r1,dss2
+0672 22              730     outrd: ret
+                     731     ;-----------------------------------------------------------------------
+0673 E4              732     send_data:clr   a
+0674 93              733             movc    a,@a+dptr
+0675 12067E          734             lcall   trans
+0678 A3              735             inc     dptr
+0679 DEF8            736             djnz    r6,send_data
+067B 22              737             ret
+                     738     
+067C 2430            739     trans1: add     a,#30h
+067E F599            740     trans:  mov     sbuf,a
+0680 3099FD          741             jnb     ti,$
+0683 C299            742             clr     ti
+0685 22              743             ret
+                     744     
+                     745     ;------------------------------------------------------------
+                     746     
+0686 4154            747     init:   db     'AT'
+0688 41542B43        748     tmd:    db     'AT+CMGF=1'
+068C 4D47463D                
+0690 31                      
+0691 41542B43        749     mmem:   db     'AT+CPMS?'
+0695 504D533F                
+0699 41542B43        750     mmno:   db     'AT+CMGS='
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    13
+
+069D 4D47533D                
+06A1 41542B43        751     sred:   db     'AT+CMGR='
+06A5 4D47523D                
+06A9 41542B43        752     sdel:   db     'AT+CMGD=1,4'
+06AD 4D47443D                
+06B1 312C34                  
+                     753     
+06B4 20207965        754     ygsm:   db     '  yes gsm      '
+06B8 73206773                
+06BC 6D202020                
+06C0 202020                  
+06C3 20206E6F        755     ngsm:   db     '  no gsm        '
+06C7 2067736D                
+06CB 20202020                
+06CF 20202020                
+06D3 496E2042        756     inb:    db     'In Box:'
+06D7 6F783A                  
+06DA 4E657720        757     nsms:   db     'New message'
+06DE 6D657373                
+06E2 616765                  
+06E5 6D657373        758     mrcd:   db     'message received'
+06E9 61676520                
+06ED 72656365                
+06F1 69766564                
+06F5 696E7661        759     invm:   db     'invalid message '
+06F9 6C696420                
+06FD 6D657373                
+0701 61676520                
+                     760     
+0705 312D424A        761     cand:   db     '1-BJP-Narenra Modi  2-Cong.-Rahul Gandhi  3-NCP-Sharad Pawar  4-MNS-Raj Tha
+                             karye.'
+0709 502D4E61                
+070D 72656E72                
+0711 61204D6F                
+0715 64692020                
+0719 322D436F                
+071D 6E672E2D                
+0721 52616875                
+0725 6C204761                
+0729 6E646869                
+072D 2020332D                
+0731 4E43502D                
+0735 53686172                
+0739 61642050                
+073D 61776172                
+0741 2020342D                
+0745 4D4E532D                
+0749 52616A20                
+074D 5468616B                
+0751 61727965                
+0755 2E                      
+                     762     
+                     763     ;----------------------------------------------------------------------------
+                     764     
+                     765                  end
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    14
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AGG. . . . . . . .  C ADDR   05A9H   A   
+AGG0 . . . . . . .  C ADDR   05C5H   A   
+AGG11. . . . . . .  C ADDR   05F3H   A   
+AGG224 . . . . . .  C ADDR   0635H   A   
+AGG23. . . . . . .  C ADDR   062BH   A   
+AGG231 . . . . . .  C ADDR   05E5H   A   
+AGG25. . . . . . .  C ADDR   0641H   A   
+AGG26. . . . . . .  C ADDR   064FH   A   
+AGN1 . . . . . . .  C ADDR   00FAH   A   
+ALRDN. . . . . . .  C ADDR   03B3H   A   
+ALRD_DN. . . . . .  C ADDR   0254H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+CAND . . . . . . .  C ADDR   0705H   A   
+CCNT1. . . . . . .  N NUMB   0037H   A   
+CCNT2. . . . . . .  N NUMB   0038H   A   
+CCNT3. . . . . . .  N NUMB   0039H   A   
+CCNT4. . . . . . .  N NUMB   003AH   A   
+CHKK_MSG . . . . .  C ADDR   0187H   A   
+CHK_CD2. . . . . .  C ADDR   02C7H   A   
+CHK_CD3. . . . . .  C ADDR   02CFH   A   
+CHK_CD4. . . . . .  C ADDR   02D7H   A   
+CHK_GSM. . . . . .  C ADDR   0413H   A   
+CHK_MSG. . . . . .  C ADDR   0135H   A   
+CHK_PS2. . . . . .  C ADDR   01E6H   A   
+CHK_PS3. . . . . .  C ADDR   01FBH   A   
+CHK_PS4. . . . . .  C ADDR   0210H   A   
+CHK_VOTE . . . . .  C ADDR   02BBH   A   
+CHK_VOTING . . . .  C ADDR   00D4H   A   
+CHK_VT . . . . . .  C ADDR   01BEH   A   
+CLEAR. . . . . . .  C ADDR   0329H   A   
+CMD. . . . . . . .  C ADDR   0382H   A   
+CNDRQ. . . . . . .  C ADDR   03D3H   A   
+COMMAND. . . . . .  C ADDR   032FH   A   
+COUNTING . . . . .  C ADDR   002FH   A   
+DA_TA. . . . . . .  B ADDR   0020H.0 A   
+DDD0 . . . . . . .  C ADDR   0575H   A   
+DDD1 . . . . . . .  C ADDR   057FH   A   
+DDD2 . . . . . . .  C ADDR   0589H   A   
+DELAY. . . . . . .  C ADDR   0400H   A   
+DELAY1 . . . . . .  C ADDR   03F3H   A   
+DELET_ALL. . . . .  C ADDR   0561H   A   
+DISPLAY. . . . . .  C ADDR   033FH   A   
+DISPLAY1 . . . . .  C ADDR   033DH   A   
+DISP_CNTR. . . . .  C ADDR   0600H   A   
+DISP_MSG . . . . .  C ADDR   0310H   A   
+DISP_SMS . . . . .  C ADDR   065FH   A   
+DISS1. . . . . . .  C ADDR   066CH   A   
+DL0. . . . . . . .  N NUMB   0030H   A   
+DL1. . . . . . . .  N NUMB   0031H   A   
+DL2. . . . . . . .  N NUMB   0032H   A   
+DSS2 . . . . . . .  C ADDR   0666H   A   
+D_SEC. . . . . . .  C ADDR   044BH   A   
+GSM. . . . . . . .  B ADDR   0020H.1 A   
+GSM_CHK. . . . . .  C ADDR   042DH   A   
+IE . . . . . . . .  D ADDR   00A8H   A   
+INB. . . . . . . .  C ADDR   06D3H   A   
+INIT . . . . . . .  C ADDR   0686H   A   
+INVCD. . . . . . .  C ADDR   03E3H   A   
+INVM . . . . . . .  C ADDR   06F5H   A   
+INVT . . . . . . .  C ADDR   03A3H   A   
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    15
+
+INV_CND. . . . . .  C ADDR   02DFH   A   
+INV_M. . . . . . .  C ADDR   0165H   A   
+INV_VT . . . . . .  C ADDR   0225H   A   
+L1 . . . . . . . .  C ADDR   0409H   A   
+L11. . . . . . . .  C ADDR   03F9H   A   
+L2 . . . . . . . .  C ADDR   0406H   A   
+L21. . . . . . . .  C ADDR   03F6H   A   
+L3 . . . . . . . .  C ADDR   0403H   A   
+LCDINIT. . . . . .  C ADDR   031AH   A   
+MMEM . . . . . . .  C ADDR   0691H   A   
+MMNO . . . . . . .  C ADDR   0699H   A   
+MRCD . . . . . . .  C ADDR   06E5H   A   
+MSG1 . . . . . . .  C ADDR   0360H   A   
+NEWMSG . . . . . .  C ADDR   014EH   A   
+NEW_MSG. . . . . .  C ADDR   0469H   A   
+NGSM . . . . . . .  C ADDR   06C3H   A   
+NOGS . . . . . . .  C ADDR   0113H   A   
+NSMS . . . . . . .  C ADDR   06DAH   A   
+OUTRD. . . . . . .  C ADDR   0672H   A   
+OUT_V1 . . . . . .  C ADDR   0252H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+PSRC . . . . . . .  C ADDR   0393H   A   
+RD_CNTR. . . . . .  C ADDR   05D3H   A   
+READY. . . . . . .  C ADDR   034DH   A   
+READ_MSGCNTR . . .  C ADDR   012AH   A   
+READ_SMS . . . . .  C ADDR   0614H   A   
+RI . . . . . . . .  B ADDR   0098H.0 A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCNT . . . . . . .  N NUMB   0033H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SDEL . . . . . . .  C ADDR   06A9H   A   
+SEL_MODE . . . . .  C ADDR   05B3H   A   
+SEND_ALRDN . . . .  C ADDR   04C3H   A   
+SEND_CAND. . . . .  C ADDR   047BH   A   
+SEND_DATA. . . . .  C ADDR   0673H   A   
+SEND_INIT. . . . .  C ADDR   0597H   A   
+SEND_INVCD . . . .  C ADDR   050BH   A   
+SEND_INVT. . . . .  C ADDR   049FH   A   
+SEND_MOBNO . . . .  C ADDR   052FH   A   
+SEND_VTDN. . . . .  C ADDR   04E7H   A   
+SRED . . . . . . .  C ADDR   06A1H   A   
+SSS4 . . . . . . .  C ADDR   0556H   A   
+SSSS3. . . . . . .  C ADDR   0540H   A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . .  B ADDR   0098H.1 A   
+TL1. . . . . . . .  D ADDR   008BH   A   
+TMD. . . . . . . .  C ADDR   0688H   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+TRANS. . . . . . .  C ADDR   067EH   A   
+TRANS1 . . . . . .  C ADDR   067CH   A   
+US1. . . . . . . .  B ADDR   0020H.2 A   
+US2. . . . . . . .  B ADDR   0020H.3 A   
+US3. . . . . . . .  B ADDR   0020H.4 A   
+US4. . . . . . . .  B ADDR   0020H.5 A   
+US5. . . . . . . .  B ADDR   0020H.6 A   
+VMD. . . . . . . .  C ADDR   0371H   A   
+VOTE_DN. . . . . .  C ADDR   0293H   A   
+VTDN . . . . . . .  C ADDR   03C3H   A   
+VVT. . . . . . . .  B ADDR   0020H.7 A   
+WAIT . . . . . . .  C ADDR   0356H   A   
+YGSM . . . . . . .  C ADDR   06B4H   A   
+
+
+REGISTER BANK(S) USED: 0 
+A51 MACRO ASSEMBLER  EVM_MOBILE                                                           03/28/2016 16:47:34 PAGE    16
+
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

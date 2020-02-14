@@ -1,0 +1,142 @@
+A51 MACRO ASSEMBLER  LCD_SMS                                                              03/11/2016 12:27:57 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.10
+OBJECT MODULE PLACED IN lcd-sms.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE lcd-sms.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+                       2     ;LCD TEST
+                       3                    
+                       4                
+0000                   5                    org      00h
+0000 7438              6                    mov      a,#38h
+0002 113E              7                    acall    command
+0004 740E              8                    mov      a,#0eh
+0006 113E              9                    acall    command
+0008 7406             10                    mov      a,#06h
+000A 113E             11                    acall    command
+                      12     
+000C 7401             13       again:             mov  a,#01h
+000E 113E             14                    acall    command
+                      15     
+0010 7480             16                    mov      a,#80h
+0012 113E             17                    acall    command
+0014 900078           18                   mov       dptr,#MSG1
+0017 7910             19                   mov       r1,#16
+0019 E4               20          back1:   clr       a
+001A 93               21                   movc      a,@a+dptr
+001B 114B             22                   acall     DISPLAY
+001D A3               23                   inc       dptr
+001E D9F9             24                   djnz      r1,back1
+                      25     
+                      26     
+0020 74C0             27                   mov a,#0c0h
+0022 113E             28                   acall command
+0024 900088           29                   mov       dptr,#MSG2
+0027 7910             30                   mov       r1,#16
+0029 E4               31          back2:   clr       a
+002A 93               32                   movc      a,@a+dptr
+002B 114B             33                   acall     DISPLAY
+002D A3               34                   inc       dptr
+002E D9F9             35                   djnz      r1,back2
+0030 116B             36                   acall  delay
+0032 116B             37                   acall  delay
+                      38     
+0034 D291             39                   setb p1.1
+0036 116B             40                   acall delay
+0038 C291             41                   clr p1.1
+003A 116B             42                   acall delay
+                      43          
+                      44                     
+003C 80CE             45                   sjmp      again
+                      46     
+                      47                   
+003E 1158             48     COMMAND:ACALL READY
+0040 F580             49             MOV   P0,A
+0042 C2A3             50             CLR   P2.3
+0044 C2A4             51             CLR   P2.4
+0046 D2A5             52             SETB  P2.5
+0048 C2A5             53             CLR   P2.5
+004A 22               54             RET
+                      55     
+004B 1158             56     DISPLAY:ACALL READY
+004D F580             57             MOV   P0,A
+004F D2A3             58             SETB  P2.3
+A51 MACRO ASSEMBLER  LCD_SMS                                                              03/11/2016 12:27:57 PAGE     2
+
+0051 C2A4             59             CLR   P2.4
+0053 D2A5             60             SETB  P2.5
+0055 C2A5             61             CLR   P2.5
+0057 22               62             RET
+                      63     
+0058 C2A5             64     READY:  CLR   P2.5
+005A 7580FF           65             MOV   P0,#0FFH
+005D C2A3             66             CLR   P2.3
+005F D2A4             67             SETB  P2.4
+0061 C2A5             68     WAIT:   CLR   P2.5
+0063 D2A5             69             SETB  P2.5
+0065 2087F9           70             JB    P0.7,WAIT
+0068 C2A5             71             CLR   P2.5
+006A 22               72             RET
+                      73     
+                      74     
+                      75     
+                      76     
+                      77     
+006B 7A06             78     delay:    mov r2,#6
+                      79     
+006D 7BFF             80     here2:    mov r3,#255
+006F 7CFF             81     here1:    mov r4,#255
+0071 DCFE             82     here:     djnz r4,here
+0073 DBFA             83               djnz r3,here1
+0075 DAF6             84               djnz r2,here2
+0077 22               85               ret
+                      86     
+                      87     
+                      88     
+                      89     
+0078 20202053         90     MSG1: db   '   SMS Voting   '
+007C 4D532056                
+0080 6F74696E                
+0084 67202020                
+0088 20202020         91     MSG2: db   '    system      '
+008C 73797374                
+0090 656D2020                
+0094 20202020                
+                      92     
+                      93     
+                      94     
+                      95                    end
+A51 MACRO ASSEMBLER  LCD_SMS                                                              03/11/2016 12:27:57 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AGAIN. . . . . . .  C ADDR   000CH   A   
+BACK1. . . . . . .  C ADDR   0019H   A   
+BACK2. . . . . . .  C ADDR   0029H   A   
+COMMAND. . . . . .  C ADDR   003EH   A   
+DELAY. . . . . . .  C ADDR   006BH   A   
+DISPLAY. . . . . .  C ADDR   004BH   A   
+HERE . . . . . . .  C ADDR   0071H   A   
+HERE1. . . . . . .  C ADDR   006FH   A   
+HERE2. . . . . . .  C ADDR   006DH   A   
+MSG1 . . . . . . .  C ADDR   0078H   A   
+MSG2 . . . . . . .  C ADDR   0088H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+READY. . . . . . .  C ADDR   0058H   A   
+WAIT . . . . . . .  C ADDR   0061H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

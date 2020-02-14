@@ -1,0 +1,136 @@
+A51 MACRO ASSEMBLER  DCMOTOR                                                              02/15/2016 12:59:52 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.10
+OBJECT MODULE PLACED IN dcmotor.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE dcmotor.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+                       2     ;LCD TEST
+                       3                    
+                       4                
+0000                   5                    org      00h
+0000 7438              6                    mov      a,#38h
+0002 1136              7                    acall    command
+0004 740E              8                    mov      a,#0eh
+0006 1136              9                    acall    command
+0008 7406             10                    mov      a,#06h
+000A 1136             11                    acall    command
+                      12     
+000C 7401             13       again:             mov  a,#01h
+000E 1136             14                    acall    command
+                      15     
+0010 7480             16                    mov      a,#80h
+0012 1136             17                    acall    command
+0014 900070           18                   mov       dptr,#MSG1
+0017 7910             19                   mov       r1,#16
+0019 E4               20          back1:   clr       a
+001A 93               21                   movc      a,@a+dptr
+001B 1143             22                   acall     DISPLAY
+001D A3               23                   inc       dptr
+001E D9F9             24                   djnz      r1,back1
+                      25     
+                      26     
+0020 74C0             27                   mov a,#0c0h
+0022 1136             28                   acall command
+0024 900080           29                   mov       dptr,#MSG2
+0027 7910             30                   mov       r1,#16
+0029 E4               31          back2:   clr       a
+002A 93               32                   movc      a,@a+dptr
+002B 1143             33                   acall     DISPLAY
+002D A3               34                   inc       dptr
+002E D9F9             35                   djnz      r1,back2
+0030 1163             36                   acall  delay
+0032 1163             37                   acall  delay
+                      38          
+                      39                     
+0034 80D6             40                   sjmp      again
+                      41     
+                      42                   
+0036 1150             43     COMMAND:ACALL READY
+0038 F580             44             MOV   P0,A
+003A C2A3             45             CLR   P2.3
+003C C2A4             46             CLR   P2.4
+003E D2A5             47             SETB  P2.5
+0040 C2A5             48             CLR   P2.5
+0042 22               49             RET
+                      50     
+0043 1150             51     DISPLAY:ACALL READY
+0045 F580             52             MOV   P0,A
+0047 D2A3             53             SETB  P2.3
+0049 C2A4             54             CLR   P2.4
+004B D2A5             55             SETB  P2.5
+004D C2A5             56             CLR   P2.5
+004F 22               57             RET
+                      58     
+A51 MACRO ASSEMBLER  DCMOTOR                                                              02/15/2016 12:59:52 PAGE     2
+
+0050 C2A5             59     READY:  CLR   P2.5
+0052 7580FF           60             MOV   P0,#0FFH
+0055 C2A3             61             CLR   P2.3
+0057 D2A4             62             SETB  P2.4
+0059 C2A5             63     WAIT:   CLR   P2.5
+005B D2A5             64             SETB  P2.5
+005D 2087F9           65             JB    P0.7,WAIT
+0060 C2A5             66             CLR   P2.5
+0062 22               67             RET
+                      68     
+                      69     
+                      70     
+                      71     
+                      72     
+0063 7A06             73     delay:    mov r2,#6
+                      74     
+0065 7BFF             75     here2:    mov r3,#255
+0067 7CFF             76     here1:    mov r4,#255
+0069 DCFE             77     here:     djnz r4,here
+006B DBFA             78               djnz r3,here1
+006D DAF6             79               djnz r2,here2
+006F 22               80               ret
+                      81     
+                      82     
+                      83     
+                      84     
+0070 20202053         85     MSG1: db   '   SMS Voting   '
+0074 4D532056                
+0078 6F74696E                
+007C 67202020                
+0080 20202020         86     MSG2: db   '    system      '
+0084 73797374                
+0088 656D2020                
+008C 20202020                
+                      87     
+                      88     
+                      89     
+                      90                    end
+A51 MACRO ASSEMBLER  DCMOTOR                                                              02/15/2016 12:59:52 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AGAIN. . . . . . .  C ADDR   000CH   A   
+BACK1. . . . . . .  C ADDR   0019H   A   
+BACK2. . . . . . .  C ADDR   0029H   A   
+COMMAND. . . . . .  C ADDR   0036H   A   
+DELAY. . . . . . .  C ADDR   0063H   A   
+DISPLAY. . . . . .  C ADDR   0043H   A   
+HERE . . . . . . .  C ADDR   0069H   A   
+HERE1. . . . . . .  C ADDR   0067H   A   
+HERE2. . . . . . .  C ADDR   0065H   A   
+MSG1 . . . . . . .  C ADDR   0070H   A   
+MSG2 . . . . . . .  C ADDR   0080H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+READY. . . . . . .  C ADDR   0050H   A   
+WAIT . . . . . . .  C ADDR   0059H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

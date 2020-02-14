@@ -1,0 +1,4 @@
+"STARTUP.obj",
+"evm_mobile.obj" 
+TO "evm_mobile" 
+RAMSIZE(256) 
